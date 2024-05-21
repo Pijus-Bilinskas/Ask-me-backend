@@ -12,7 +12,7 @@ export const SIGN_UP = async (req, res) => {
             id: uuidv4(),
             name: req.body.name,
             email: req.body.email,
-            password: req.body.password,
+            password: hash,
         });
 
         const response = await user.save();
@@ -49,6 +49,12 @@ export const LOG_IN = async (req, res) => {
                 expiresIn: "2h",
             }
         );
+
+        const jwt_refresh_token = jwt.sign(
+            { user_id: user.id },
+            process.env.JWT_REFRESH_SECRET,
+            { expiresIn: "24h" }
+          );
 
         return res.status(200).json({
             jwt_token: jwt_token,

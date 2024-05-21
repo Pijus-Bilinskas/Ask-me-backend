@@ -10,8 +10,8 @@ import { auth } from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.post("/register", auth, SIGN_UP);
-router.post("/login", auth, LOG_IN);
+router.post("/register",  SIGN_UP);
+router.post("/login",  LOG_IN);
 
 router.get("/refresh-token", auth, GET_NEW_JWT_TOKEN);
 
