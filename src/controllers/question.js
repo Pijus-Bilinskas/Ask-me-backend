@@ -19,15 +19,17 @@ export const GET_ALL_QUESTIONS = async (req, res) => {
 export const INSERT_QUESTION = async (req, res) => {
     try{
 
-        const user = await UserModel.findOne({ id: req.body.user_Id })
+        // const user = await UserModel.findOne({ id: req.body.userid })
 
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
+        // if (!user) {
+        //     return res.status(404).json({ message: "User not found" });
+        // }
+
+
 
         const question = new QuestionModel({
             id: uuidv4(),
-            user_id: user.id,
+            user_id: req.body.userid,
             question_text: req.body.question_text,
             date: new Date(), 
         })
@@ -95,6 +97,10 @@ export const DELETE_ANSWER = async (req, res) => {
     try{
         const answer = await AnswerModel.findOne({ id: req.params.id })
 
+        if(!answer) {
+            return res.status(404).json({ message: "No answer with such ID was found" })
+        }
+
         const response = await answer.deleteOne();
 
         return res.status(200).json({ message: response, message: "Answer was successfully deleted" })
@@ -103,3 +109,19 @@ export const DELETE_ANSWER = async (req, res) => {
     }
 }
 
+export const LIKE_ANSWER = async (req, res) => {
+    try{
+        const answer = await AnswerModel.findOne({ id: req.params.id})
+
+        if(!answer) {
+            return res.status(404).json({ message: "No answer wtih such ID was found" })
+        }
+
+        answer.gained_likes_number += 1;
+        await answer.save();
+
+        return res.status(200).json({ message: "Answer was successfully liked", likes: answer.gained_likes_number })
+    } catch (err) {
+        return res.status(500).json({message: "Error occurred", err })
+    }
+}
